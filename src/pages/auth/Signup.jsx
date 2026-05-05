@@ -428,8 +428,8 @@ export default function Signup() {
     } catch (err) {
       setLoading(false);
       const msg = err.message || '';
-      if (msg.includes('already exists')) {
-        setSignupError(msg);
+      if (msg.includes('already exists') || msg.includes('already registered')) {
+        setSignupError('This email is already registered. Try logging in instead.');
       } else if (msg.includes('password')) {
         setSignupError('Password must be at least 8 characters and include a number.');
       } else {
