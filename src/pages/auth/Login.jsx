@@ -6,7 +6,7 @@ import './Auth.css';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, isMockMode } = useAuth();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,21 +25,16 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      if (isMockMode) {
-        // Mock mode — any credentials work
-        await new Promise(r => setTimeout(r, 1000));
-      } else {
-        await login(form.email, form.password);
-      }
+      await login(form.email, form.password);
       navigate('/dashboard');
     } catch (err) {
       const msg = err.message || '';
       if (msg.includes('UserNotConfirmedException') || msg.includes('not confirmed')) {
         navigate('/verify-email', { state: { email: form.email } });
-      } else if (msg.includes('NotAuthorizedException') || msg.includes('Incorrect username or password')) {
+      } else if (msg.includes('Incorrect password') || msg.includes('NotAuthorizedException')) {
         setError('Incorrect email or password. Please try again.');
-      } else if (msg.includes('UserNotFoundException')) {
-        setError('No account found with this email. Sign up first.');
+      } else if (msg.includes('No account') || msg.includes('UserNotFoundException')) {
+        setError('No account found with this email. Please sign up first.');
       } else {
         setError(msg || 'Login failed. Please try again.');
       }

@@ -395,18 +395,11 @@ export default function Signup() {
     submitSignup(collectedDetails, skillData);
   };
 
-  // Core submission — calls Cognito register()
+  // Core submission
   const submitSignup = async (details, skillData) => {
     setLoading(true);
     setSignupError('');
     try {
-      if (isMockMode) {
-        // Mock mode — simulate delay then go to success
-        await new Promise(r => setTimeout(r, 1200));
-        setLoading(false);
-        setStep(4);
-        return;
-      }
       const result = await register({
         name: details.name,
         email: details.email,
@@ -414,31 +407,34 @@ export default function Signup() {
         password: details.password,
         role,
         skill: skillData.skill || '',
+        categories: skillData.categories || [],
         rate: skillData.rate || '',
         bio: skillData.bio || '',
-        location: '',
+        location: 'Chennai, Tamil Nadu',
+        area: '',
       });
       setLoading(false);
-      // Cognito requires email verification
+      // Local auth → already logged in, go straight to app
+      if (result?.nextStep?.signUpStep === 'DONE') {
+        navigate(role === 'worker' ? '/dashboard' : '/browse');
+        return;
+      }
+      // Real Cognito → needs email verification
       if (result?.nextStep?.signUpStep === 'CONFIRM_SIGN_UP') {
         navigate('/verify-email', { state: { email: details.email } });
       } else {
-        // Already confirmed (shouldn't happen but handle gracefully)
         setStep(4);
       }
     } catch (err) {
       setLoading(false);
       const msg = err.message || '';
-      if (msg.includes('UsernameExistsException') || msg.includes('already exists')) {
-        setSignupError('An account with this email already exists. Try logging in.');
-      } else if (msg.includes('InvalidPasswordException') || msg.includes('password')) {
+      if (msg.includes('already exists')) {
+        setSignupError(msg);
+      } else if (msg.includes('password')) {
         setSignupError('Password must be at least 8 characters and include a number.');
-      } else if (msg.includes('InvalidParameterException')) {
-        setSignupError('Please check your details and try again.');
       } else {
         setSignupError(msg || 'Signup failed. Please try again.');
       }
-      // Go back to step 2 to show error
       setStep(2);
     }
   };

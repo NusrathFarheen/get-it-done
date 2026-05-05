@@ -369,7 +369,7 @@ export default function Dashboard() {
           </Link>
         )}
         {user.role === 'worker' && (
-          <Link to={`/worker/w1`} className="btn btn-secondary dash__sidebar-cta" id="sidebar-view-profile">
+          <Link to={`/worker/${user.id}`} className="btn btn-secondary dash__sidebar-cta" id="sidebar-view-profile">
             View My Profile
           </Link>
         )}
@@ -484,13 +484,31 @@ export default function Dashboard() {
                   <span className="dash__profile-label">Email</span>
                   <span className="dash__profile-val">{user.email}</span>
                 </div>
+                {user.phone && (
+                  <div className="dash__profile-row">
+                    <span className="dash__profile-label">Phone</span>
+                    <span className="dash__profile-val">{user.phone}</span>
+                  </div>
+                )}
                 <div className="dash__profile-row">
                   <span className="dash__profile-label">Location</span>
-                  <span className="dash__profile-val">{user.location}</span>
+                  <span className="dash__profile-val">{user.area || user.location}</span>
                 </div>
+                {user.role === 'worker' && user.skill && (
+                  <div className="dash__profile-row">
+                    <span className="dash__profile-label">Primary Skill</span>
+                    <span className="dash__profile-val">{user.skill}</span>
+                  </div>
+                )}
+                {user.role === 'worker' && user.bio && (
+                  <div className="dash__profile-row">
+                    <span className="dash__profile-label">Bio</span>
+                    <span className="dash__profile-val" style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>"{user.bio}"</span>
+                  </div>
+                )}
                 <div className="dash__profile-row">
                   <span className="dash__profile-label">Account Type</span>
-                  <span className="dash__profile-val">{user.role === 'client' ? 'Client' : 'Worker'} · Free plan</span>
+                  <span className="dash__profile-val">{user.role === 'client' ? '🏠 Client' : '🔧 Worker'} · Free plan</span>
                 </div>
                 <div className="dash__profile-row">
                   <span className="dash__profile-label">Member Since</span>
