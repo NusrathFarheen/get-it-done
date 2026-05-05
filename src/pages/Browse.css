@@ -197,6 +197,29 @@
   font-weight: 600;
 }
 
+/* Type tabs */
+.browse__type-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.browse__type-tab {
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.02);
+  cursor: pointer; font-family: var(--font-body);
+  transition: all 0.2s; white-space: nowrap;
+}
+.browse__type-tab:hover { border-color: var(--amber); color: var(--text-primary); }
+.browse__type-tab--active {
+  border-color: var(--amber);
+  background: rgba(245,158,11,0.1);
+  color: var(--amber);
+}
+
 /* Range slider */
 .browse__range {
   -webkit-appearance: none;

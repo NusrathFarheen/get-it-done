@@ -6,7 +6,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { WORKERS } from '../data/workers';
-import { CATEGORIES } from '../data/categories';
+import { CATEGORIES, CATEGORY_TYPES } from '../data/categories';
 import './Browse.css';
 
 const SORT_OPTIONS = [
@@ -89,6 +89,7 @@ function WorkerCard({ worker }) {
 
 export default function Browse() {
   const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState('rating');
   const [priceMax, setPriceMax] = useState(1000);
@@ -96,6 +97,11 @@ export default function Browse() {
   const [availableOnly, setAvailableOnly] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
+
+  // Categories visible for the selected type
+  const visibleCategories = typeFilter === 'all'
+    ? CATEGORIES
+    : CATEGORIES.filter(c => c.type === typeFilter);
 
   const filtered = useMemo(() => {
     let list = [...WORKERS];
@@ -107,6 +113,11 @@ export default function Browse() {
         w.tags.some(t => t.toLowerCase().includes(q)) ||
         w.category.toLowerCase().includes(q)
       );
+    }
+    // Filter by type first, then by specific category
+    if (typeFilter !== 'all') {
+      const typeIds = new Set(CATEGORIES.filter(c => c.type === typeFilter).map(c => c.id));
+      list = list.filter(w => typeIds.has(w.category));
     }
     if (category !== 'all') list = list.filter(w => w.category === category);
     if (verifiedOnly) list = list.filter(w => w.verified);
@@ -127,6 +138,7 @@ export default function Browse() {
     verifiedOnly && 'Verified Only',
     availableOnly && 'Available Today',
     priceMax < 1000 && `Under ₹${priceMax}/hr`,
+    typeFilter !== 'all' && `${CATEGORY_TYPES.find(t => t.key === typeFilter)?.emoji} ${CATEGORY_TYPES.find(t => t.key === typeFilter)?.label}`,
     category !== 'all' && (CATEGORIES.find(c => c.id === category)?.label || category),
   ].filter(Boolean);
 
@@ -134,6 +146,7 @@ export default function Browse() {
     if (f === 'Verified Only') setVerifiedOnly(false);
     else if (f === 'Available Today') setAvailableOnly(false);
     else if (f.startsWith('Under')) setPriceMax(1000);
+    else if (CATEGORY_TYPES.some(t => f.includes(t.label))) { setTypeFilter('all'); setCategory('all'); }
     else setCategory('all');
   };
 
@@ -185,7 +198,7 @@ export default function Browse() {
             {activeFilters.length > 0 && (
               <button
                 className="browse__clear-all"
-                onClick={() => { setCategory('All'); setVerifiedOnly(false); setAvailableOnly(false); setPriceMax(1000); }}
+                onClick={() => { setTypeFilter('all'); setCategory('all'); setVerifiedOnly(false); setAvailableOnly(false); setPriceMax(1000); }}
                 id="clear-all-filters"
               >
                 Clear all
@@ -193,7 +206,24 @@ export default function Browse() {
             )}
           </div>
 
-          {/* Category */}
+          {/* Type tabs */}
+          <div className="browse__filter-group">
+            <div className="browse__filter-label">Type</div>
+            <div className="browse__type-tabs">
+              {CATEGORY_TYPES.map(t => (
+                <button
+                  key={t.key}
+                  id={`filter-type-${t.key}`}
+                  className={`browse__type-tab ${typeFilter === t.key ? 'browse__type-tab--active' : ''}`}
+                  onClick={() => { setTypeFilter(t.key); setCategory('all'); }}
+                >
+                  {t.emoji} {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Category — filtered by type */}
           <div className="browse__filter-group">
             <div className="browse__filter-label">Category</div>
             <div className="browse__cats">
@@ -202,9 +232,9 @@ export default function Browse() {
                 className={`browse__cat-btn ${category === 'all' ? 'browse__cat-btn--active' : ''}`}
                 onClick={() => setCategory('all')}
               >
-                All
+                All {typeFilter !== 'all' ? CATEGORY_TYPES.find(t => t.key === typeFilter)?.label : ''}
               </button>
-              {CATEGORIES.map(cat => (
+              {visibleCategories.map(cat => (
                 <button
                   key={cat.id}
                   id={`filter-cat-${cat.id}`}
