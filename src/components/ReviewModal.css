@@ -1,0 +1,181 @@
+/* ── Review Modal ── */
+.review-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.review-modal {
+  position: relative;
+  width: 100%; max-width: 520px;
+  padding: 32px;
+  display: flex; flex-direction: column; gap: 22px;
+  max-height: 90vh; overflow-y: auto;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.review__close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-muted); display: flex;
+  align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.review__close:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+
+/* Header */
+.review__header {
+  display: flex; align-items: center; gap: 14px;
+}
+.review__worker-avatar {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0;
+}
+.review__modal-title {
+  font-family: var(--font-heading); font-size: 18px;
+  font-weight: 800; color: var(--text-primary);
+}
+.review__worker-name { font-size: 13px; color: var(--amber); font-weight: 600; }
+.review__job-title { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* Stars */
+.review__stars-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.review__stars { display: flex; gap: 4px; }
+.review__star {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--border); padding: 4px;
+  transition: color 0.15s, transform 0.15s;
+}
+.review__star--active { color: var(--amber); }
+.review__star:hover { transform: scale(1.15); }
+
+.review__stars-label {
+  font-size: 14px; font-weight: 700; color: var(--amber);
+  opacity: 0; transform: translateY(4px);
+  transition: all 0.2s;
+  min-height: 20px;
+}
+.review__stars-label--visible { opacity: 1; transform: translateY(0); }
+
+/* Field */
+.review__field { display: flex; flex-direction: column; gap: 8px; }
+.review__label {
+  font-size: 12px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.review__label-hint { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.review__textarea {
+  background: rgba(255,255,255,0.04); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 12px 14px;
+  color: var(--text-primary); font-size: 14px; line-height: 1.6;
+  font-family: var(--font-body); resize: vertical; outline: none;
+  transition: border-color 0.2s;
+}
+.review__textarea:focus { border-color: var(--amber); }
+.review__textarea::placeholder { color: var(--text-muted); }
+
+/* Photos */
+.review__photos-section { display: flex; flex-direction: column; gap: 10px; }
+.review__photos-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.review__photos-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.review__photo-thumb {
+  position: relative; width: 80px; height: 80px;
+  border-radius: var(--radius-md); overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+.review__photo-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.review__photo-remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(0,0,0,0.6); border: none;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+.review__photo-add {
+  width: 80px; height: 80px; border-radius: var(--radius-md);
+  border: 2px dashed var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px;
+  color: var(--text-muted); font-size: 10px; font-weight: 600;
+  cursor: pointer; background: transparent; font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.review__photo-add:hover { border-color: var(--amber); color: var(--amber); }
+
+.review__photos-note {
+  font-size: 11px; color: var(--text-muted); line-height: 1.5;
+}
+
+/* Error */
+.review__error {
+  padding: 10px 14px; border-radius: var(--radius-md);
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+  color: #f87171; font-size: 13px;
+}
+
+/* Submit */
+.review__submit {
+  width: 100%; justify-content: center; gap: 8px;
+  padding: 14px; font-size: 15px;
+}
+
+.review__spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(10,13,20,0.3); border-top-color: #0a0d14;
+  animation: spin 0.8s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.review__spin { animation: spin 1s linear infinite; }
+
+/* Success */
+.review__success {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; text-align: center; padding: 20px 0;
+}
+.review__success-icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--success);
+  animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.review__success-title {
+  font-family: var(--font-heading); font-size: 20px; font-weight: 800;
+  color: var(--text-primary);
+}
+.review__success-sub { font-size: 14px; color: var(--text-muted); }
+
+/* Review photo in worker profile */
+.wp__review-photos {
+  display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+}
+.wp__review-photo {
+  width: 72px; height: 72px; border-radius: var(--radius-md);
+  object-fit: cover; border: 1.5px solid var(--border);
+  cursor: pointer; transition: transform 0.2s;
+}
+.wp__review-photo:hover { transform: scale(1.04); }

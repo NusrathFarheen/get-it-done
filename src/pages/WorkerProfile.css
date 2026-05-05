@@ -1,0 +1,559 @@
+/* ── Worker Profile Page ── */
+.wp-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.wp__glow-1 { width: 500px; height: 500px; top: 0; right: 0; }
+.wp__glow-2 { width: 400px; height: 400px; bottom: 30%; left: -100px; }
+
+/* Not found */
+.wp-not-found {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+.wp-not-found__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.wp-not-found__inner h2 { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+.wp-not-found__inner p { color: var(--text-muted); }
+
+/* ── Top bar ── */
+.wp__topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 28px;
+  background: rgba(10, 13, 20, 0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.wp__back { padding: 8px 14px; font-size: 13px; gap: 4px; }
+
+.wp__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.wp__logo-icon {
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--amber) 0%, #f97316 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #0a0d14;
+}
+
+.wp__topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.wp__save-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.wp__save-btn:hover { border-color: #ec4899; color: #ec4899; }
+.wp__save-btn--saved { color: #ec4899; border-color: rgba(236, 72, 153, 0.35); background: rgba(236, 72, 153, 0.06); }
+
+.wp__share-btn {
+  display: flex; align-items: center;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.wp__share-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ── Layout ── */
+.wp__layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  padding-top: 28px;
+  padding-bottom: 60px;
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hero Card ── */
+.wp__hero { padding: 24px; }
+
+.wp__hero-inner {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.wp__avatar {
+  width: 72px; height: 72px;
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 22px; font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+.wp__hero-info { flex: 1; }
+
+.wp__hero-name {
+  font-family: var(--font-heading);
+  font-size: 24px; font-weight: 800;
+  color: var(--text-primary);
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+}
+
+.wp__verified-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+}
+
+.wp__hero-skill { font-size: 15px; color: var(--amber); font-weight: 600; margin: 4px 0; }
+
+.wp__hero-location {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13px; color: var(--text-muted); margin-bottom: 10px;
+}
+
+.wp__hero-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Stats bar */
+.wp__stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wp__stat-item { text-align: center; }
+
+.wp__stat-val {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 800;
+  color: var(--text-primary);
+}
+.wp__stat-star { color: var(--amber); }
+.wp__stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.wp__stat-sep { width: 1px; height: 36px; background: var(--border); }
+
+/* ── Tabs ── */
+.wp__tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  width: fit-content;
+}
+
+.wp__tab {
+  padding: 9px 20px;
+  border-radius: var(--radius-full);
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.wp__tab--active {
+  background: linear-gradient(135deg, var(--amber) 0%, var(--amber-dark) 100%);
+  color: #0a0d14;
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* ── Tab content ── */
+.wp__tab-content { display: flex; flex-direction: column; gap: 16px; }
+
+.wp__section {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wp__section-title {
+  font-size: 16px; font-weight: 700;
+  color: var(--text-primary);
+}
+
+.wp__section-sub { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+.wp__bio {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* Skills grid */
+.wp__skills-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.wp__skill-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: var(--amber);
+  font-size: 13px; font-weight: 500;
+}
+
+/* Languages */
+.wp__langs { display: flex; gap: 8px; flex-wrap: wrap; }
+.wp__lang {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  font-size: 13px; color: var(--text-secondary);
+}
+
+/* Portfolio */
+.wp__portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.wp__portfolio-card {
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.wp__portfolio-card:hover {
+  border-color: var(--border-hover);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-amber);
+}
+
+.wp__portfolio-card--empty { opacity: 0.4; cursor: default; }
+.wp__portfolio-card--empty:hover { transform: none; border-color: var(--border); box-shadow: none; }
+
+.wp__portfolio-emoji { font-size: 36px; line-height: 1; }
+.wp__portfolio-ph { font-size: 28px; }
+
+.wp__portfolio-label {
+  font-size: 12px; color: var(--text-secondary);
+  font-weight: 500; line-height: 1.4;
+}
+
+/* Reviews */
+.wp__rating-summary {
+  display: flex; align-items: center; gap: 20px;
+}
+
+.wp__rating-big {
+  font-family: var(--font-heading);
+  font-size: 52px; font-weight: 900;
+  color: var(--text-primary); line-height: 1;
+}
+
+.wp__stars { display: flex; gap: 3px; }
+.wp__star--filled { color: var(--amber); }
+.wp__star--empty { color: var(--border); }
+
+.wp__rating-count {
+  font-size: 13px; color: var(--text-muted); margin-top: 6px;
+}
+
+.wp__reviews-list { display: flex; flex-direction: column; gap: 20px; }
+
+.wp__review {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.wp__review:last-child { border-bottom: none; padding-bottom: 0; }
+
+.wp__review-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+
+.wp__review-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), #f97316);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #0a0d14;
+  flex-shrink: 0;
+}
+
+.wp__review-author { font-weight: 700; font-size: 14px; color: var(--text-primary); }
+.wp__review-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.wp__stars { margin-left: auto; }
+
+.wp__review-text {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Catalogue */
+.wp__catalogue { display: flex; flex-direction: column; gap: 0; }
+
+.wp__catalogue-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.wp__catalogue-item:last-child { border-bottom: none; }
+
+.wp__catalogue-service { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+.wp__catalogue-time {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: var(--text-muted);
+}
+
+.wp__catalogue-price {
+  font-weight: 700; font-size: 14px; color: var(--amber);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* ── Booking Sidebar ── */
+.wp__sidebar {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wp__booking-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wp__booking-rate {
+  display: flex; align-items: baseline; gap: 4px;
+}
+
+.wp__booking-rate-val {
+  font-family: var(--font-heading);
+  font-size: 36px; font-weight: 900;
+  color: var(--text-primary);
+}
+
+.wp__booking-rate-unit { font-size: 14px; color: var(--text-muted); }
+
+.wp__booking-avail {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+.wp__booking-avail--on { background: rgba(16,185,129,0.1); color: var(--success); }
+.wp__booking-avail--off { background: rgba(100,116,139,0.1); color: var(--text-muted); }
+
+.wp__avail-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.wp__hire-btn, .wp__chat-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 13px;
+  font-size: 15px;
+}
+
+.wp__hire-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+.wp__booking-notes {
+  display: flex; flex-direction: column; gap: 7px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.wp__note {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-muted);
+}
+.wp__note svg { color: var(--success); flex-shrink: 0; }
+
+/* Quick stats card */
+.wp__quick-stats {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wp__quick-stat {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text-secondary);
+}
+.wp__quick-stat svg { color: var(--amber); flex-shrink: 0; }
+.wp__quick-stat strong { color: var(--text-primary); }
+
+.wp__browse-more {
+  width: 100%;
+  justify-content: center;
+  font-size: 13px;
+}
+
+/* ── Chat Modal ── */
+.wp__chat-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+.wp__chat-modal {
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeSlideUp 0.25s ease;
+}
+
+.wp__chat-modal-header {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.wp__chat-avatar {
+  width: 42px; height: 42px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+.wp__chat-name { font-weight: 700; font-size: 15px; color: var(--text-primary); }
+.wp__chat-skill { font-size: 12px; color: var(--amber); margin-top: 2px; }
+
+.wp__chat-close {
+  margin-left: auto;
+  background: transparent; border: none;
+  color: var(--text-muted); cursor: pointer;
+  font-size: 18px; line-height: 1;
+  padding: 4px; border-radius: 4px;
+  transition: color 0.2s;
+}
+.wp__chat-close:hover { color: var(--text-primary); }
+
+.wp__chat-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  resize: none;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+.wp__chat-input::placeholder { color: var(--text-muted); }
+.wp__chat-input:focus { border-color: rgba(245, 158, 11, 0.4); }
+
+.wp__chat-note {
+  font-size: 12px; color: var(--text-muted);
+  text-align: center; line-height: 1.5;
+}
+
+/* Chat success */
+.wp__chat-sent {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+  padding: 20px 0;
+  text-align: center;
+}
+.wp__chat-sent-icon { font-size: 40px; }
+.wp__chat-sent-title { font-weight: 700; font-size: 18px; color: var(--text-primary); }
+.wp__chat-sent-sub { font-size: 13px; color: var(--text-muted); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .wp__layout { grid-template-columns: 1fr; }
+  .wp__sidebar { position: static; }
+  .wp__stats-bar { justify-content: flex-start; gap: 20px; }
+  .wp__stat-sep { display: none; }
+  .wp__portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 540px) {
+  .wp__tabs { width: 100%; }
+  .wp__tab { flex: 1; text-align: center; padding: 9px 10px; font-size: 12px; }
+  .wp__portfolio-grid { grid-template-columns: 1fr; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,143 @@
+.how {
+  position: relative;
+  padding: var(--section-pad) 0;
+  overflow: hidden;
+}
+
+.how__glow {
+  width: 600px;
+  height: 600px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.how__header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.how__header .section-subtitle {
+  margin: 0 auto;
+}
+
+/* Steps Grid */
+.how__steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 40px;
+}
+
+.how__step {
+  padding: 28px 24px;
+  position: relative;
+  cursor: default;
+}
+
+.how__step-num {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.how__step-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.how__step:hover .how__step-icon {
+  transform: scale(1.1) rotate(-3deg);
+}
+
+.how__step-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.how__step-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* Arrow between steps */
+.how__step-arrow {
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--amber);
+  z-index: 2;
+  font-size: 12px;
+}
+
+/* Trust Banner */
+.how__trust {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 32px;
+  flex-wrap: wrap;
+}
+
+.how__trust-icon {
+  color: var(--amber);
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: var(--amber-glow);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.how__trust-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.how__trust-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.how__trust > div { flex: 1; }
+
+@media (max-width: 1024px) {
+  .how__steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .how__step-arrow { display: none; }
+}
+
+@media (max-width: 600px) {
+  .how__steps { grid-template-columns: 1fr; }
+  .how__trust { flex-direction: column; text-align: center; }
+  .how__trust > a { width: 100%; justify-content: center; }
+}

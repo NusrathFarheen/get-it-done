@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>GetItDone</title>
+  <script>
+    /**
+     * GitHub Pages SPA Redirect
+     * --------------------------
+     * When a user visits /get-it-done/browse directly, GitHub Pages
+     * returns a 404 (it doesn't know about React Router routes).
+     * This page intercepts that 404 and redirects to index.html
+     * with the intended path encoded as a query parameter.
+     * index.html then decodes it and restores the correct URL via history API.
+     */
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + 1).join('/') + '/?/' +
+      l.pathname.slice(1).split('/').slice(1).join('/').replace(/&/g, '~and~') +
+      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+<body></body>
+</html>
