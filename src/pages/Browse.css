@@ -445,6 +445,25 @@
   overflow: hidden;
 }
 
+.bwc__top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bwc__multiskill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(232,121,249,0.15));
+  border: 1px solid rgba(244,114,182,0.3);
+  color: #f472b6;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
 .bwc__availability {
   display: inline-flex;
   align-items: center;

@@ -19,12 +19,18 @@ const SORT_OPTIONS = [
 function WorkerCard({ worker }) {
   return (
     <div className="bwc glass-card" id={`browse-card-${worker.id}`}>
-      {/* Availability pill */}
-      <div className={`bwc__availability ${worker.available ? 'bwc__availability--on' : 'bwc__availability--off'}`}>
-        <span className="bwc__avail-dot" />
-        {worker.available ? 'Available today' : 'Booked out'}
+      {/* Availability + multi-skill badge */}
+      <div className="bwc__top-row">
+        <div className={`bwc__availability ${worker.available ? 'bwc__availability--on' : 'bwc__availability--off'}`}>
+          <span className="bwc__avail-dot" />
+          {worker.available ? 'Available today' : 'Booked out'}
+        </div>
+        {worker.categories && worker.categories.length > 1 && (
+          <div className="bwc__multiskill" title={worker.categories.join(', ')}>
+            ✦ {worker.categories.length} skills
+          </div>
+        )}
       </div>
-
       {/* Header */}
       <div className="bwc__header">
         <div className="bwc__avatar" style={{ background: worker.gradient }}>
@@ -114,12 +120,19 @@ export default function Browse() {
         w.category.toLowerCase().includes(q)
       );
     }
-    // Filter by type first, then by specific category
+    // Filter by type — check both primary category and all categories
     if (typeFilter !== 'all') {
       const typeIds = new Set(CATEGORIES.filter(c => c.type === typeFilter).map(c => c.id));
-      list = list.filter(w => typeIds.has(w.category));
+      list = list.filter(w =>
+        typeIds.has(w.category) ||
+        w.categories?.some(cat => typeIds.has(cat))
+      );
     }
-    if (category !== 'all') list = list.filter(w => w.category === category);
+    // Filter by specific category — check both primary and all categories
+    if (category !== 'all') list = list.filter(w =>
+      w.category === category ||
+      w.categories?.includes(category)
+    );
     if (verifiedOnly) list = list.filter(w => w.verified);
     if (availableOnly) list = list.filter(w => w.available);
     list = list.filter(w => w.rate <= priceMax);

@@ -462,6 +462,46 @@ export const WORKERS = [
     ],
     portfolio: PORTFOLIO_IMGS.henna,
   },
+
+  // ── Multi-Skill Worker Example ────────────────────────────────────────────
+  {
+    id: 'w14',
+    initials: 'KS',
+    name: 'Kavitha Subramaniam',
+    // primaryCategory = the skill shown on the card header
+    category: 'baking',
+    // categories = ALL skills she offers (shows up in every relevant search)
+    categories: ['baking', 'henna', 'beauty', 'painting', 'cooking'],
+    skill: 'Baker · Mehndi Artist · Home Chef',
+    location: 'Mylapore, Chennai',
+    rating: 4.97,
+    reviews: 203,
+    jobs: 284,
+    rate: 300,
+    verified: true,
+    available: true,
+    responseTime: '< 2 hrs',
+    repeatClients: '84%',
+    joinedYear: 2021,
+    gradient: 'linear-gradient(135deg, #f472b6, #e879f9)',
+    bio: 'I\'m a multi-skilled home professional based in Mylapore. I bake custom cakes and pastries, design bridal and Arabic mehndi, do basic makeup and hair for events, take on interior painting projects, and cater home-cooked meals for small gatherings. All my clients come through word-of-mouth — now I\'m here to reach more of you!',
+    tags: ['Custom Cakes', 'Bridal Mehndi', 'Home Chef', 'Event Catering', 'Wall Painting', 'Makeup & Hair'],
+    languages: ['Tamil', 'English'],
+    catalogue: [
+      { service: 'Custom cake (1 kg, fondant)', price: '₹800 – ₹2,500', time: '2–3 days' },
+      { service: 'Bridal full-hand mehndi', price: '₹1,200 – ₹2,500', time: '3–4 hrs' },
+      { service: 'Bridal makeup (parlour-style)', price: '₹1,500 – ₹3,000', time: '2–3 hrs' },
+      { service: 'Room / accent wall painting', price: '₹800 – ₹2,000', time: '1 day' },
+      { service: 'Home catering (lunch/dinner, 10 pax)', price: '₹1,500 – ₹3,500', time: 'Same day' },
+      { service: 'Birthday / event full package', price: '₹4,000 – ₹8,000', time: '1 day' },
+    ],
+    reviewsList: [
+      { author: 'Divya R.', initials: 'DR', rating: 5, date: 'Apr 2026', text: 'Kavitha did my sister\'s wedding mehndi AND baked the reception cake. Both were absolutely stunning. She\'s incredibly talented across everything she does.', photos: [] },
+      { author: 'Preethi M.', initials: 'PM', rating: 5, date: 'Mar 2026', text: 'Booked her for our house warming — she cooked, painted a feature wall, and helped decorate. One person, all done perfectly.', photos: [] },
+      { author: 'Janaki S.', initials: 'JS', rating: 5, date: 'Feb 2026', text: 'Custom birthday cake with my daughter\'s favourite cartoon. Tasted amazing, looked even better. Will order again for every birthday!', photos: [] },
+    ],
+    portfolio: PORTFOLIO_IMGS.baking,
+  },
 ];
 
 export { WORKERS as default };

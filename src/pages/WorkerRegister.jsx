@@ -26,7 +26,8 @@ const STEPS = [
 
 const INITIAL = {
   name: '', phone: '', email: '', area: '',
-  category: '', bio: '', tags: [],
+  categories: [],            // ← array now, up to 6
+  bio: '', tags: [],
   rate: '', rateType: 'hourly', languages: [],
   catalogue: [{ service: '', price: '', time: '' }],
   photos: [],
@@ -49,6 +50,15 @@ export default function WorkerRegister() {
     set('tags', form.tags.includes(tag)
       ? form.tags.filter(t => t !== tag)
       : form.tags.length < 8 ? [...form.tags, tag] : form.tags);
+  };
+
+  const toggleCategory = catId => {
+    const cats = form.categories;
+    if (cats.includes(catId)) {
+      set('categories', cats.filter(c => c !== catId));
+    } else if (cats.length < 6) {
+      set('categories', [...cats, catId]);
+    }
   };
 
   const toggleLang = l => {
@@ -79,7 +89,7 @@ export default function WorkerRegister() {
       if (!form.email.includes('@')) e.email = 'Enter a valid email';
       if (!form.area) e.area = 'Select your area';
     }
-    if (step === 2 && !form.category) e.category = 'Select your craft / skill';
+    if (step === 2 && form.categories.length === 0) e.categories = 'Select at least one skill';
     if (step === 3 && !form.bio.trim()) e.bio = 'Write a short bio';
     if (step === 4 && !form.rate) e.rate = 'Enter your rate';
     setErrors(e);
@@ -99,8 +109,9 @@ export default function WorkerRegister() {
     setSubmitted(true);
   };
 
-  const selectedCategory = CATEGORIES.find(c => c.id === form.category);
-  const SUGGESTED_TAGS = selectedCategory
+  const selectedCategories = CATEGORIES.filter(c => form.categories.includes(c.id));
+  const primaryCategory = selectedCategories[0];
+  const SUGGESTED_TAGS = primaryCategory
     ? ['Custom orders', 'Home visits', 'Express delivery', 'Online booking',
        'Bulk orders', 'Events', 'Beginners welcome', 'Certified']
     : [];
@@ -116,7 +127,7 @@ export default function WorkerRegister() {
             We'll verify your profile within 24 hours and notify you at <strong>{form.email}</strong>.
           </p>
           <div className="wr-success__detail">
-            <div className="wr-success__row"><span>Craft</span><strong>{selectedCategory?.emoji} {selectedCategory?.label}</strong></div>
+            <div className="wr-success__row"><span>Skills</span><strong>{selectedCategories.map(c => `${c.emoji} ${c.label}`).join(', ')}</strong></div>
             <div className="wr-success__row"><span>Area</span><strong>{form.area}</strong></div>
             <div className="wr-success__row"><span>Rate</span><strong>₹{form.rate}/{form.rateType === 'hourly' ? 'hr' : 'job'}</strong></div>
           </div>
@@ -228,22 +239,36 @@ export default function WorkerRegister() {
           {/* ── Step 2: Category ── */}
           {step === 2 && (
             <div className="wr__section" id="wr-step-2">
-              <h2 className="wr__title">What's your craft?</h2>
-              <p className="wr__subtitle">Pick the category that best describes your main skill.</p>
-              {errors.category && <div className="wr__error-box">{errors.category}</div>}
+              <h2 className="wr__title">What are your skills?</h2>
+              <p className="wr__subtitle">Select all that apply — up to 6 skills. You can excel at multiple things! 🌟</p>
+              {errors.categories && <div className="wr__error-box">{errors.categories}</div>}
+              {form.categories.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)', alignSelf: 'center' }}>Selected:</span>
+                  {selectedCategories.map(cat => (
+                    <span key={cat.id} style={{
+                      padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+                      background: `${cat.color}18`, border: `1px solid ${cat.color}40`, color: cat.color
+                    }}>{cat.emoji} {cat.label} ✕</span>
+                  ))}
+                </div>
+              )}
 
-              {['trade', 'creative', 'service'].map(type => (
+              {['trade', 'technical', 'creative', 'service'].map(type => (
                 <div key={type} className="wr__cat-group">
                   <div className="wr__cat-group-label">
-                    {type === 'trade' ? '🔧 Trades & Home' : type === 'creative' ? '🎨 Creative & Handcraft' : '✨ Services'}
+                    {type === 'trade' ? '🔧 Trades & Home' : type === 'technical' ? '💻 Technical & Repairs' : type === 'creative' ? '🎨 Creative & Handcraft' : '✨ Services'}
                   </div>
                   <div className="wr__cat-grid">
                     {CATEGORIES.filter(c => c.type === type).map(cat => (
                       <button
                         key={cat.id} type="button" id={`cat-${cat.id}`}
-                        className={`wr__cat-card ${form.category === cat.id ? 'wr__cat-card--active' : ''}`}
-                        style={form.category === cat.id ? { '--cat-color': cat.color } : {}}
-                        onClick={() => { set('category', cat.id); setErrors({}); }}
+                        className={`wr__cat-card ${form.categories.includes(cat.id) ? 'wr__cat-card--active' : ''} ${
+                          !form.categories.includes(cat.id) && form.categories.length >= 6 ? 'wr__cat-card--disabled' : ''
+                        }`}
+                        style={form.categories.includes(cat.id) ? { '--cat-color': cat.color } : {}}
+                        onClick={() => { toggleCategory(cat.id); setErrors({}); }}
+                        disabled={!form.categories.includes(cat.id) && form.categories.length >= 6}
                       >
                         <span className="wr__cat-emoji">{cat.emoji}</span>
                         <span className="wr__cat-name">{cat.label}</span>
@@ -389,7 +414,7 @@ export default function WorkerRegister() {
                 <div className="wr__review-title">📋 Profile Summary</div>
                 <div className="wr__review-row"><span>Name</span><strong>{form.name}</strong></div>
                 <div className="wr__review-row"><span>Area</span><strong>{form.area}</strong></div>
-                <div className="wr__review-row"><span>Craft</span><strong>{selectedCategory?.emoji} {selectedCategory?.label}</strong></div>
+                <div className="wr__review-row"><span>Skills</span><strong>{selectedCategories.map(c => `${c.emoji} ${c.label}`).join(', ')}</strong></div>
                 <div className="wr__review-row"><span>Rate</span><strong>₹{form.rate}/{form.rateType === 'hourly' ? 'hr' : 'job'}</strong></div>
                 <div className="wr__review-row"><span>Photos</span><strong>{previews.length} uploaded</strong></div>
               </div>

@@ -6,6 +6,7 @@ import {
   ArrowRight, Share2, Heart, Shield, Camera,
 } from 'lucide-react';
 import { WORKERS } from '../data/workers';
+import { getCategoryById } from '../data/categories';
 import PortfolioGallery from '../components/PortfolioGallery';
 import './WorkerProfile.css';
 
@@ -114,6 +115,21 @@ export default function WorkerProfile() {
                     <span key={t} className="tag">{t}</span>
                   ))}
                 </div>
+                {/* Multi-skill category pills */}
+                {worker.categories && worker.categories.length > 1 && (
+                  <div className="wp__skill-pills">
+                    <span className="wp__skill-pills-label">✦ All skills</span>
+                    {worker.categories.map(catId => {
+                      const cat = getCategoryById(catId);
+                      return (
+                        <span key={catId} className="wp__skill-pill"
+                          style={{ '--pill-color': cat.color }}>
+                          {cat.emoji} {cat.label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 
