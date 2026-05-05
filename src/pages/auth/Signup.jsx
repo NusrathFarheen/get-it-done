@@ -400,6 +400,7 @@ export default function Signup() {
     setLoading(true);
     setSignupError('');
     try {
+      console.log('[Signup] Calling register with:', details.email);
       const result = await register({
         name: details.name,
         email: details.email,
@@ -413,19 +414,24 @@ export default function Signup() {
         location: 'Chennai, Tamil Nadu',
         area: '',
       });
+      console.log('[Signup] Register returned:', result);
       setLoading(false);
       // Local auth → already logged in, go straight to app
       if (result?.nextStep?.signUpStep === 'DONE') {
+        console.log('[Signup] Navigating to', role === 'worker' ? '/dashboard' : '/browse');
         navigate(role === 'worker' ? '/dashboard' : '/browse');
         return;
       }
       // Real Cognito → needs email verification
       if (result?.nextStep?.signUpStep === 'CONFIRM_SIGN_UP') {
+        console.log('[Signup] Navigating to verify-email');
         navigate('/verify-email', { state: { email: details.email } });
       } else {
+        console.log('[Signup] Going to step 4');
         setStep(4);
       }
     } catch (err) {
+      console.error('[Signup] Error caught:', err);
       setLoading(false);
       const msg = err.message || '';
       if (msg.includes('already exists') || msg.includes('already registered')) {
