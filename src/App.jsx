@@ -10,6 +10,7 @@ import PostJob from './pages/PostJob';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import Escrow from './pages/Escrow';
+import WorkerRegister from './pages/WorkerRegister';
 
 // ── Protected route wrapper ─────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
@@ -38,7 +39,8 @@ export default function App() {
         <Route path="/signup"     element={<Signup />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/browse"     element={<Browse />} />
-        <Route path="/worker/:id" element={<WorkerProfile />} />
+        <Route path="/worker/:id"      element={<WorkerProfile />} />
+        <Route path="/register-worker" element={<WorkerRegister />} />
 
         {/* Protected routes (require login) */}
         <Route path="/post-job"   element={<ProtectedRoute><PostJob /></ProtectedRoute>} />

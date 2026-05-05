@@ -34,6 +34,12 @@ export const CATEGORIES = [
   { id: 'candles',        label: 'Candles & Soaps',     emoji: '🕯️', type: 'creative', color: '#f9a8d4', description: 'Handcrafted candles, soaps, gifts' },
   { id: 'art',            label: 'Art & Illustration',  emoji: '🎨', type: 'creative', color: '#34d399', description: 'Portraits, murals, digital art' },
   { id: 'flowers',        label: 'Floral Arrangements', emoji: '🌸', type: 'creative', color: '#f43f5e', description: 'Bouquets, décor, event florals' },
+  // ── Tamil Nadu Specials ─────────────────────────────────
+  { id: 'tanjore',        label: 'Tanjore Painting',    emoji: '🖼️', type: 'creative', color: '#dc2626', description: 'Classical gold-leaf Tanjore art' },
+  { id: 'kolam',          label: 'Kolam & Rangoli Art', emoji: '🌀', type: 'creative', color: '#7c3aed', description: 'Traditional floor art & events' },
+  { id: 'silk_tailoring', label: 'Silk & Saree Tailoring',emoji: '🥻', type: 'creative', color: '#be185d', description: 'Kanjivaram, blouses, ethnic wear' },
+  { id: 'carnatic',       label: 'Carnatic Music',      emoji: '🎶', type: 'service',  color: '#b45309', description: 'Vocal & instrument lessons' },
+  { id: 'bharatanatyam',  label: 'Bharatanatyam',       emoji: '💃', type: 'service',  color: '#9333ea', description: 'Classical dance classes & arangetram' },
 
   // ── Services ───────────────────────────────────────────
   { id: 'cleaning',       label: 'Cleaning',            emoji: '✨', type: 'service',  color: '#10b981', description: 'Home, office, deep cleaning' },
