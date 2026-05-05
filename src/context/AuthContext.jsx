@@ -1,119 +1,103 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  signIn, signOut, signUp, confirmSignUp,
-  getCurrentUser, fetchUserAttributes, resendSignUpCode,
-  resetPassword, confirmResetPassword,
-} from 'aws-amplify/auth';
-import { isCognitoConfigured } from '../amplify-config';
+import { supabase } from '../supabaseClient';
 
-// ─── LocalStorage-backed user store (used when Cognito isn't live yet) ────────
-// Each account is stored as: gid_users → { [email]: { ...profile } }
-// Current session: gid_session → email of logged-in user
-
-const STORE_KEY = 'gid_users';
-const SESSION_KEY = 'gid_session';
-
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch { return {}; }
-}
-function saveUsers(users) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(users));
-}
-function getSession() {
-  return localStorage.getItem(SESSION_KEY);
-}
-function saveSession(email) {
-  if (email) localStorage.setItem(SESSION_KEY, email);
-  else localStorage.removeItem(SESSION_KEY);
-}
+const AuthContext = createContext(null);
 
 function makeInitials(name = '') {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
-
-function profileFromStored(stored) {
-  return {
-    id: stored.id,
-    name: stored.name,
-    initials: makeInitials(stored.name),
-    email: stored.email,
-    phone: stored.phone || '',
-    role: stored.role || 'client',
-    skill: stored.skill || '',
-    categories: stored.categories || [],
-    rate: stored.rate || '',
-    bio: stored.bio || '',
-    location: stored.location || 'Chennai, Tamil Nadu',
-    area: stored.area || '',
-    memberSince: stored.memberSince || new Date().getFullYear(),
-    verified: stored.verified || false,
-  };
-}
-
-// ─── Is Cognito actually configured? ─────────────────────────────────────────
-// We use localStorage auth whenever Cognito isn't wired up.
-const USE_LOCAL_AUTH = !isCognitoConfigured();
-// ─────────────────────────────────────────────────────────────────────────────
-
-const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // On mount — restore session from localStorage OR Cognito
+  // Read session on mount and listen for auth changes
   useEffect(() => {
-    if (USE_LOCAL_AUTH) {
-      const email = getSession();
-      if (email) {
-        const users = getUsers();
-        const stored = users[email];
-        if (stored) {
-          setUser(profileFromStored(stored));
-        }
+    const fetchSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (session?.user) {
+        await loadUserProfile(session.user);
+      } else {
+        setUser(null);
       }
       setAuthLoading(false);
-      return;
-    }
+    };
 
-    // Real Cognito path
-    getCurrentUser()
-      .then(() => fetchUserAttributes())
-      .then(attrs => {
-        setUser({
-          id: attrs.sub,
-          name: attrs.name || 'User',
-          initials: makeInitials(attrs.name),
-          email: attrs.email,
-          phone: attrs.phone_number || '',
-          role: attrs['custom:role'] || 'client',
-          skill: attrs['custom:skill'] || '',
-          categories: [],
-          rate: attrs['custom:rate'] || '',
-          bio: attrs['custom:bio'] || '',
-          location: attrs['custom:location'] || '',
-          memberSince: new Date().getFullYear(),
-          verified: attrs.email_verified === 'true',
-        });
-      })
-      .catch(() => setUser(null))
-      .finally(() => setAuthLoading(false));
+    fetchSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session?.user) await loadUserProfile(session.user);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  /* ── Register (localStorage or Cognito) ── */
+  const loadUserProfile = async (authUser) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+      }
+
+      setUser({
+        id: authUser.id,
+        email: authUser.email,
+        name: profile?.name || 'User',
+        initials: makeInitials(profile?.name || 'User'),
+        phone: profile?.phone || '',
+        role: profile?.role || 'client',
+        skill: profile?.skill || '',
+        categories: profile?.categories || [],
+        rate: profile?.rate || '',
+        bio: profile?.bio || '',
+        location: profile?.location || 'Chennai, Tamil Nadu',
+        area: profile?.area || '',
+        memberSince: profile?.created_at ? new Date(profile.created_at).getFullYear() : new Date().getFullYear(),
+        verified: true, // We assume true for now, can be linked to email confirmation
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /* ── Register (Supabase) ── */
   const register = async ({ name, email, phone, password, role, skill, categories, rate, bio, location, area }) => {
     setAuthError(null);
 
-    if (USE_LOCAL_AUTH) {
-      const users = getUsers();
-      if (users[email]) {
-        throw new Error('An account with this email already exists. Try logging in.');
+    // 1. Create auth user
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, role } // Optional metadata
       }
-      const newUser = {
-        id: `local-${Date.now()}`,
-        name, email, phone, password, // stored for local auth only
+    });
+
+    if (signUpError) throw signUpError;
+
+    const authUser = data.user;
+    if (!authUser) throw new Error('Sign up failed.');
+
+    // 2. Create profile record
+    const { error: profileError } = await supabase.from('profiles').insert([
+      {
+        id: authUser.id,
+        email,
+        name,
+        phone,
         role: role || 'client',
         skill: skill || '',
         categories: categories || [],
@@ -121,114 +105,83 @@ export function AuthProvider({ children }) {
         bio: bio || '',
         location: location || 'Chennai, Tamil Nadu',
         area: area || '',
-        memberSince: new Date().getFullYear(),
-        verified: true, // auto-verify in local mode
-      };
-      users[email] = newUser;
-      saveUsers(users);
-      saveSession(email);
-      setUser(profileFromStored(newUser));
-      return { nextStep: { signUpStep: 'DONE' } };
+      }
+    ]);
+
+    if (profileError) {
+      console.error('Profile creation error:', profileError);
+      // Wait, if it fails, maybe it already exists or row level security blocked it. 
+      // Supabase triggers can also create profiles, but let's do it manually for now.
     }
 
-    // Real Cognito
-    const customAttributes = { 'custom:role': role };
-    if (skill) customAttributes['custom:skill'] = skill;
-    if (rate) customAttributes['custom:rate'] = String(rate);
-    if (bio) customAttributes['custom:bio'] = bio;
-    if (location) customAttributes['custom:location'] = location;
-
-    const result = await signUp({
-      username: email,
-      password,
-      options: {
-        userAttributes: {
-          name,
-          email,
-          phone_number: phone ? `+91${phone.replace(/\D/g, '').slice(-10)}` : undefined,
-          ...customAttributes,
-        },
-      },
-    });
-    return result;
+    if (data.session) {
+      await loadUserProfile(authUser);
+      return { nextStep: { signUpStep: 'DONE' } };
+    } else {
+      return { nextStep: { signUpStep: 'CONFIRM_SIGN_UP' } };
+    }
   };
 
-  /* ── Log In (localStorage or Cognito) ── */
+  /* ── Log In (Supabase) ── */
   const login = async (email, password) => {
     setAuthError(null);
-
-    if (USE_LOCAL_AUTH) {
-      const users = getUsers();
-      const stored = users[email];
-      if (!stored) throw new Error('No account found with this email. Please sign up first.');
-      if (stored.password !== password) throw new Error('Incorrect password. Please try again.');
-      saveSession(email);
-      setUser(profileFromStored(stored));
-      return;
-    }
-
-    // Real Cognito
-    await signIn({ username: email, password });
-    const attrs = await fetchUserAttributes();
-    setUser({
-      id: attrs.sub,
-      name: attrs.name || 'User',
-      initials: makeInitials(attrs.name),
-      email: attrs.email,
-      phone: attrs.phone_number || '',
-      role: attrs['custom:role'] || 'client',
-      skill: attrs['custom:skill'] || '',
-      categories: [],
-      rate: attrs['custom:rate'] || '',
-      bio: attrs['custom:bio'] || '',
-      location: attrs['custom:location'] || '',
-      memberSince: new Date().getFullYear(),
-      verified: attrs.email_verified === 'true',
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
+    if (error) throw error;
+    // onAuthStateChange handles loading the profile
   };
 
   /* ── Log Out ── */
   const logout = async () => {
-    if (!USE_LOCAL_AUTH) await signOut();
-    saveSession(null);
+    await supabase.auth.signOut();
     setUser(null);
   };
 
-  /* ── Verify OTP (only needed for real Cognito) ── */
+  /* ── Verify OTP (Magic Link / Email Confirmation usually handled by links in Supabase, but keeping interface) ── */
   const verifyEmail = async (email, code) => {
     setAuthError(null);
-    if (USE_LOCAL_AUTH) return; // auto-verified in local mode
-    await confirmSignUp({ username: email, confirmationCode: code });
+    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'signup' });
+    if (error) throw error;
   };
 
   /* ── Resend OTP ── */
   const resendCode = async (email) => {
     setAuthError(null);
-    if (!USE_LOCAL_AUTH) await resendSignUpCode({ username: email });
+    await supabase.auth.resend({ type: 'signup', email });
   };
 
   /* ── Forgot Password ── */
   const forgotPassword = async (email) => {
     setAuthError(null);
-    if (!USE_LOCAL_AUTH) await resetPassword({ username: email });
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) throw error;
   };
 
   /* ── Confirm New Password ── */
   const confirmNewPassword = async (email, code, newPassword) => {
     setAuthError(null);
-    if (!USE_LOCAL_AUTH) await confirmResetPassword({ username: email, confirmationCode: code, newPassword });
+    // Not directly supported with a code in Supabase JS v2 without the session. 
+    // Usually password reset uses magic links. We'll leave it as a stub or update password if logged in.
+    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'recovery' });
+    if (error) throw error;
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    if (updateError) throw updateError;
   };
 
-  /* ── Update profile (for workers completing their profile) ── */
-  const updateProfile = (updates) => {
-    if (USE_LOCAL_AUTH && user?.email) {
-      const users = getUsers();
-      if (users[user.email]) {
-        users[user.email] = { ...users[user.email], ...updates };
-        saveUsers(users);
+  /* ── Update profile ── */
+  const updateProfile = async (updates) => {
+    if (user?.id) {
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id);
+      
+      if (!error) {
+        setUser(prev => ({ ...prev, ...updates, initials: makeInitials(updates.name || prev?.name) }));
       }
     }
-    setUser(prev => ({ ...prev, ...updates, initials: makeInitials(updates.name || prev?.name) }));
   };
 
   return (
@@ -237,8 +190,8 @@ export function AuthProvider({ children }) {
       authLoading,
       authError,
       isAuthenticated: !!user,
-      isMockMode: false,     // no longer using a hard-coded mock user
-      isLocalAuth: USE_LOCAL_AUTH,
+      isMockMode: false,     
+      isLocalAuth: false,    // Now using Supabase
       register,
       verifyEmail,
       resendCode,
