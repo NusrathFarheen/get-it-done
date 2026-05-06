@@ -16,13 +16,20 @@ export function AuthProvider({ children }) {
   // Read session on mount and listen for auth changes
   useEffect(() => {
     const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session?.user) {
-        await loadUserProfile(session.user);
-      } else {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        const session = data?.session;
+        if (session?.user) {
+          await loadUserProfile(session.user);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error('Error in fetchSession:', err);
         setUser(null);
+      } finally {
+        setAuthLoading(false);
       }
-      setAuthLoading(false);
     };
 
     fetchSession();
@@ -89,8 +96,8 @@ export function AuthProvider({ children }) {
 
     if (signUpError) throw signUpError;
 
-    const authUser = data.user;
-    if (!authUser) throw new Error('Sign up failed.');
+    const authUser = data?.user;
+    if (!authUser) throw new Error('Sign up failed. Please check your credentials or try again later.');
 
     // 2. Create profile record
     const { error: profileError } = await supabase.from('profiles').insert([
