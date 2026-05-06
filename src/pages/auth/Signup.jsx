@@ -98,7 +98,7 @@ function StepDetails({ role, onNext, onBack }) {
       setError('Password must include at least one number.');
       return;
     }
-    if (!/[!@#$%^&*()_+\-=\[\]{};:'",.<>?/\\|`~]/.test(form.password)) {
+    if (!/[!@#$%^&*()_+\-=[\]{};:'",.<>?/\\|`~]/.test(form.password)) {
       setError('Password must include at least one symbol (e.g. ! @ # $).');
       return;
     }

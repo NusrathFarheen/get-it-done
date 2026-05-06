@@ -82,7 +82,8 @@ export function AuthProvider({ children }) {
       email,
       password,
       options: {
-        data: { name, role } // Optional metadata
+        data: { name, role }, // Optional metadata
+        emailRedirectTo: window.location.origin + (import.meta.env.BASE_URL || '/')
       }
     });
 
